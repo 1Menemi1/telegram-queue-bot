@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,11 @@ namespace telegram_queue_bot
 {
     internal static class Program
     {
-        private static readonly ITelegramBotClient Bot = new TelegramBotClient("TOKEN");
-
         private const string PathToAnecdotes = "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\anecdotes.json";
+        private const string PathToToken = "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\secret-information\\token.txt";
+
+        private static readonly string Token = System.IO.File.ReadAllText(PathToToken);
+        private static readonly ITelegramBotClient Bot = new TelegramBotClient($"{Token}");
         private static readonly List<TgUser> Queue = new List<TgUser>();
         private static readonly WevSecurityConfig Config = new WevSecurityConfig();
 

@@ -6,7 +6,10 @@ namespace telegram_queue_bot
 {
     public class WevSecurityConfig
     {
-        private static readonly string ConnectionString =
+        private const string PathToConnectionString =
+            "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\secret-information\\connection-string.txt";
+
+        private static readonly string ConnectionString = $"{System.IO.File.ReadAllText(PathToConnectionString)}";
 
         public static void TestConnection()
         {
