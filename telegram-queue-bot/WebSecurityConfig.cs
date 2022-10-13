@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Npgsql;
 
@@ -21,14 +22,14 @@ namespace telegram_queue_bot
             }
         }
 
-        public static void AddNewUser(TgUser tgUser)
+        public static void RegisterNewUser(TgUser tgUser)
         {
             using var connection = GetConnection();
-            var username = tgUser.UserName;
-            var tg_id = tgUser.UserId;
-            var query = @$"insert into public.users(username,tg_id,is_admin)values('{username}',{tg_id},false)";
+            var query =
+                @$"INSERT INTO public.users(username,tg_id,is_admin) VALUES('{tgUser.UserName}',{tgUser.UserId},false)";
             var cmd = new NpgsqlCommand(query, connection);
             connection.Open();
+
             var n = cmd.ExecuteNonQuery();
             if (n == 1)
             {
@@ -36,30 +37,32 @@ namespace telegram_queue_bot
             }
         }
 
-        public void GetAllUsers()
+        public static List<TgUser> GetAllUsersInQueue()
         {
             using var connection = GetConnection();
-            const string query = "SELECT * FROM public.users";
+            const string query = "SELECT * FROM public.queue";
             var cmd = new NpgsqlCommand(query, connection);
             connection.Open();
 
             using var reader = cmd.ExecuteReader();
 
+            var resultList = new List<TgUser>();
             while (reader.Read())
             {
-                Console.WriteLine("id: {0}; username: {1}; user_tg_id: {2}\n", reader.GetInt32(0), reader.GetString(1),
-                    reader.GetInt32(2));
+                resultList.Add(new TgUser(reader.GetString(0), reader.GetInt32(1)));
             }
+
+            return resultList;
         }
 
-        public static int FindUserById(int userId)
+        public static int FindUserInDataBase(int userId)
         {
-            using NpgsqlConnection connection = GetConnection();
+            using var connection = GetConnection();
             var query = $"SELECT * FROM public.users where tg_id = {userId}";
             var cmd = new NpgsqlCommand(query, connection);
             connection.Open();
 
-            using NpgsqlDataReader reader = cmd.ExecuteReader();
+            using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -72,14 +75,14 @@ namespace telegram_queue_bot
             return 0;
         }
 
-        public static int FindUserByUsername(string username)
+        public static int FindUserInDataBase(string username)
         {
             using var connection = GetConnection();
             var query = $"SELECT * FROM public.users where username = '{username}'";
             var cmd = new NpgsqlCommand(query, connection);
             connection.Open();
 
-            using NpgsqlDataReader reader = cmd.ExecuteReader();
+            using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -107,6 +110,72 @@ namespace telegram_queue_bot
             }
 
             return false;
+        }
+
+        public static void AddUserToQueue(TgUser user)
+        {
+            using var connection = GetConnection();
+            var query = @$"INSERT INTO public.queue(username,tg_id) VALUES('{user.UserName}',{user.UserId})";
+            var cmd = new NpgsqlCommand(query, connection);
+            connection.Open();
+
+            var n = cmd.ExecuteNonQuery();
+            if (n == 1)
+            {
+                Console.WriteLine($"{user.UserName}:{user.UserId} has been added to queue");
+            }
+        }
+
+        public static int FindUserInQueue(int userTgId)
+        {
+            using var connection = GetConnection();
+            var query = $"SELECT * FROM public.queue where tg_id = {userTgId}";
+            var cmd = new NpgsqlCommand(query, connection);
+            connection.Open();
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                return reader.GetInt32(1);
+            }
+
+            return 0;
+        }
+
+        public static int FindUserInQueue(string username)
+        {
+            using var connection = GetConnection();
+            var query = $"SELECT * FROM public.queue where username = '{username}'";
+            var cmd = new NpgsqlCommand(query, connection);
+            connection.Open();
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                return reader.GetInt32(1);
+            }
+
+            return 0;
+        }
+
+        public static void RemoveFromQueue(int userTgId)
+        {
+            using var connection = GetConnection();
+            var query = @$"DELETE FROM public.queue WHERE tg_id={userTgId}";
+            var cmd = new NpgsqlCommand(query, connection);
+            connection.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+        public static void ResetQueue()
+        {
+            using var connection = GetConnection();
+            const string query = @"DELETE FROM public.queue";
+            var cmd = new NpgsqlCommand(query, connection);
+            connection.Open();
+            cmd.ExecuteNonQuery();
         }
 
         private static NpgsqlConnection GetConnection()
