@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace telegram_queue_bot
+﻿namespace telegram_queue_bot
 {
     public class TgUser
     {
-        public String UserName { get; }
+        public string UserName { get; }
         public int UserId { get; }
 
-        public TgUser(String Name, int Id)
+        public TgUser(string name, int id)
         {
-            UserName = Name;
-            UserId = Id;
+            UserName = name;
+            UserId = id;
         }
     }
 }
