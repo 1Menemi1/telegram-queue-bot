@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace telegram_queue_bot
 {
-    public class WevSecurityConfig
+    public class DataBaseConfig
     {
         private const string PathToConnectionString =
             "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\secret-information\\connection-string.txt";

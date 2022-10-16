@@ -124,7 +124,7 @@ namespace telegram_queue_bot
         // TODO: start
         private static void Main(string[] args)
         {
-            WevSecurityConfig.TestConnection();
+            DataBaseConfig.TestConnection();
             Console.WriteLine("Bot started its work " + Bot.GetMeAsync().Result.FirstName);
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;

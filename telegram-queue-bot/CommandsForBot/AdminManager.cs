@@ -13,7 +13,7 @@ namespace telegram_queue_bot.CommandsForBot.Admin
 
         private static bool IsUserAnAdmin(Message message)
         {
-            var isAdmin = WevSecurityConfig.IsUserAnAdmin(Convert.ToInt32(message.From.Id));
+            var isAdmin = DataBaseConfig.IsUserAnAdmin(Convert.ToInt32(message.From.Id));
             if (!isAdmin)
             {
                 PrintErrorMessage(message);
@@ -57,7 +57,7 @@ namespace telegram_queue_bot.CommandsForBot.Admin
                 return;
             }
 
-            WevSecurityConfig.ResetQueue();
+            DataBaseConfig.ResetQueue();
             await _botClient.SendTextMessageAsync(message.Chat,
                 $"Ты зачем мне всю очередь стёр(-ла)...", cancellationToken: _cancellationToken);
         }
@@ -78,7 +78,7 @@ namespace telegram_queue_bot.CommandsForBot.Admin
             }
 
             var usernameToRemove = splitMessage[1].Replace("@", "");
-            var memberId = WevSecurityConfig.FindUserInQueue(usernameToRemove);
+            var memberId = DataBaseConfig.FindUserInQueue(usernameToRemove);
             if (memberId == 0)
             {
                 await _botClient.SendTextMessageAsync(message.Chat,
@@ -87,7 +87,7 @@ namespace telegram_queue_bot.CommandsForBot.Admin
             }
             else
             {
-                WevSecurityConfig.RemoveFromQueue(memberId);
+                DataBaseConfig.RemoveFromQueue(memberId);
                 await _botClient.SendTextMessageAsync(message.Chat,
                     $"{memberId}:@{usernameToRemove} удален(-а) из очереди",
                     cancellationToken: _cancellationToken);

@@ -15,7 +15,7 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
         private static int GetPositionInQueue(int userId)
         {
             var count = 0;
-            foreach (var member in WevSecurityConfig.GetAllUsersInQueue())
+            foreach (var member in DataBaseConfig.GetAllUsersInQueue())
             {
                 count++;
                 if (userId.Equals(member.UserId))
@@ -47,9 +47,9 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
         public async Task RegisterCommand(Message message)
         {
             var user = new TgUser(message.From.Username, Convert.ToInt32(message.From.Id));
-            if (WevSecurityConfig.FindUserInDataBase(user.UserId) == 0)
+            if (DataBaseConfig.FindUserInDataBase(user.UserId) == 0)
             {
-                WevSecurityConfig.RegisterNewUser(user);
+                DataBaseConfig.RegisterNewUser(user);
                 await _botClient.SendTextMessageAsync(message.Chat, "Регистрация прошла успешно",
                     cancellationToken: _cancellationToken);
                 return;
@@ -62,10 +62,10 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
         public async Task QueueCommand(Message message)
         {
             var user = new TgUser(message.From.Username, Convert.ToInt32(message.From.Id));
-            var userId = WevSecurityConfig.FindUserInDataBase(user.UserId);
+            var userId = DataBaseConfig.FindUserInDataBase(user.UserId);
             if (userId != 0)
             {
-                if (WevSecurityConfig.FindUserInQueue(userId) != 0)
+                if (DataBaseConfig.FindUserInQueue(userId) != 0)
                 {
                     await _botClient.SendTextMessageAsync(message.Chat,
                         $"Ты уже есть в очереди\nТвой номер в ней: {GetPositionInQueue(userId)}",
@@ -74,7 +74,7 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
                 }
             }
 
-            WevSecurityConfig.AddUserToQueue(user);
+            DataBaseConfig.AddUserToQueue(user);
             await _botClient.SendTextMessageAsync(message.Chat,
                 $"Твой номер в очереди: {GetPositionInQueue(userId)}",
                 cancellationToken: _cancellationToken);
@@ -84,7 +84,7 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
         {
             var list = "";
             var count = 0;
-            foreach (var member in WevSecurityConfig.GetAllUsersInQueue())
+            foreach (var member in DataBaseConfig.GetAllUsersInQueue())
             {
                 count++;
                 list += $"{count}. @{member.UserName}\n";
@@ -97,10 +97,10 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
         public async Task StopCommand(Message message)
         {
             var user = new TgUser(message.From.Username, Convert.ToInt32(message.From.Id));
-            var userIdToRemove = WevSecurityConfig.FindUserInDataBase(user.UserId);
+            var userIdToRemove = DataBaseConfig.FindUserInDataBase(user.UserId);
             if (userIdToRemove != 0)
             {
-                var memberId = WevSecurityConfig.FindUserInQueue(userIdToRemove);
+                var memberId = DataBaseConfig.FindUserInQueue(userIdToRemove);
                 if (memberId == 0)
                 {
                     await _botClient.SendTextMessageAsync(message.Chat,
@@ -109,7 +109,7 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
                     return;
                 }
 
-                WevSecurityConfig.RemoveFromQueue(memberId);
+                DataBaseConfig.RemoveFromQueue(memberId);
                 await _botClient.SendTextMessageAsync(message.Chat,
                     "Ты вышел(-ла) из очереди, чтобы заново в неё встать, напиши команду: `/queue`",
                     cancellationToken: _cancellationToken);
