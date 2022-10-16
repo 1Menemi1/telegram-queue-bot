@@ -77,7 +77,8 @@ namespace telegram_queue_bot.CommandsForBot.Admin
                 return;
             }
 
-            var memberId = WevSecurityConfig.FindUserInQueue(splitMessage[1]);
+            var usernameToRemove = splitMessage[1].Replace("@", "");
+            var memberId = WevSecurityConfig.FindUserInQueue(usernameToRemove);
             if (memberId == 0)
             {
                 await _botClient.SendTextMessageAsync(message.Chat,
@@ -88,7 +89,7 @@ namespace telegram_queue_bot.CommandsForBot.Admin
             {
                 WevSecurityConfig.RemoveFromQueue(memberId);
                 await _botClient.SendTextMessageAsync(message.Chat,
-                    $"{memberId}:{splitMessage[1]} удален(-а) из очереди",
+                    $"{memberId}:@{usernameToRemove} удален(-а) из очереди",
                     cancellationToken: _cancellationToken);
             }
         }
