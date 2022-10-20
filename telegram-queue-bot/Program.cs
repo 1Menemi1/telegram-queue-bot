@@ -112,6 +112,8 @@ namespace telegram_queue_bot
                         break;
                     }
                 }
+
+                Console.WriteLine();
             }
         }
 
