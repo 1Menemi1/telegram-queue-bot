@@ -21,6 +21,21 @@ namespace telegram_queue_bot.CommandsForBot.Admin
 
             return isAdmin;
         }
+        
+        private static int GetPositionInQueue(int userId)
+        {
+            var count = 0;
+            foreach (var member in DataBaseConfig.GetAllUsersInQueue())
+            {
+                count++;
+                if (userId.Equals(member.UserId))
+                {
+                    return count;
+                }
+            }
+
+            return 0;
+        }
 
         private static async Task PrintErrorMessage(Message message)
         {
@@ -87,10 +102,23 @@ namespace telegram_queue_bot.CommandsForBot.Admin
             }
             else
             {
+                var positionOfUserToRemove = GetPositionInQueue(memberId);
                 DataBaseConfig.RemoveFromQueue(memberId);
                 await _botClient.SendTextMessageAsync(message.Chat,
                     $"{memberId}:@{usernameToRemove} удален(-а) из очереди",
                     cancellationToken: _cancellationToken);
+                
+                if (positionOfUserToRemove.Equals(1))
+                {
+                    var allUsersInQueue = DataBaseConfig.GetAllUsersInQueue();
+                    if (allUsersInQueue.Count.Equals(0))
+                    {
+                        return;
+                    }
+                    await _botClient.SendTextMessageAsync(allUsersInQueue[0].UserId,
+                        $"@{allUsersInQueue[0].UserName}, очередь подошла к тебе, ты сдаёшь следующий(-ей)",
+                        cancellationToken: _cancellationToken);
+                }
             }
         }
 

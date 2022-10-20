@@ -109,10 +109,23 @@ namespace telegram_queue_bot.CommandsForBot.CommonUser
                     return;
                 }
 
+                var positionOfUserToRemove = GetPositionInQueue(memberId);
                 DataBaseConfig.RemoveFromQueue(memberId);
                 await _botClient.SendTextMessageAsync(message.Chat,
                     "Ты вышел(-ла) из очереди, чтобы заново в неё встать, напиши команду: `/queue`",
                     cancellationToken: _cancellationToken);
+
+                if (positionOfUserToRemove.Equals(1))
+                {
+                    var allUsersInQueue = DataBaseConfig.GetAllUsersInQueue();
+                    if (allUsersInQueue.Count.Equals(0))
+                    {
+                        return;
+                    }
+                    await _botClient.SendTextMessageAsync(allUsersInQueue[0].UserId,
+                        $"@{allUsersInQueue[0].UserName}, очередь подошла к тебе, ты сдаёшь следующий(-ей)",
+                        cancellationToken: _cancellationToken);
+                }
             }
         }
 
