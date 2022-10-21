@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using telegram_queue_bot.CommandsForBot;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
-using telegram_queue_bot.CommandsForBot.Admin;
-using telegram_queue_bot.CommandsForBot.CommonUser;
 
 namespace telegram_queue_bot
 {
     internal static class Program
     {
-        private const string PathToAnecdotes = "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\anecdotes.json";
+        private const string PathToAnecdotes = "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\Anecdotes.json";
 
         private const string PathToToken =
-            "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\secret-information\\token.txt";
+            "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\SecretInformation\\Token.txt";
 
         private static readonly string Token = System.IO.File.ReadAllText(PathToToken);
         private static readonly ITelegramBotClient Bot = new TelegramBotClient($"{Token}");

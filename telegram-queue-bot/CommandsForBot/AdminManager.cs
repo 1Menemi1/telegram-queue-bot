@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace telegram_queue_bot.CommandsForBot.Admin
+namespace telegram_queue_bot.CommandsForBot
 {
     public class AdminManager : IOptionalChoice
     {

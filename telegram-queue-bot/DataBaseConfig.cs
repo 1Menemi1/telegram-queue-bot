@@ -8,7 +8,7 @@ namespace telegram_queue_bot
     public class DataBaseConfig
     {
         private const string PathToConnectionString =
-            "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\secret-information\\connection-string.txt";
+            "D:\\ITMO\\telegram-queue-bot\\telegram-queue-bot\\SecretInformation\\ConnectionString.txt";
 
         private static readonly string ConnectionString = $"{System.IO.File.ReadAllText(PathToConnectionString)}";
 

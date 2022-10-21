@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace telegram_queue_bot.CommandsForBot.CommonUser
+namespace telegram_queue_bot.CommandsForBot
 {
     public class UserManager : IOptionalChoice
     {
