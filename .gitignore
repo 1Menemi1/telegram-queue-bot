@@ -364,4 +364,4 @@ FodyWeavers.xsd
 global.json
 *.sln
 *.csproj
-secret-information
+SecretInformation
